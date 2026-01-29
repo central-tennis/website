@@ -1062,6 +1062,24 @@ button {
   margin-top: 0.5rem;
 }
 
+.form-message {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.form-message--success {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.form-message--error {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
 /* Contact Info */
 .contact-info {
   color: white;
