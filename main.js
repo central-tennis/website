@@ -1,5 +1,30 @@
 // Central Tennis - Main JavaScript
 
+// Contact info obfuscation (prevents bot scraping)
+(function() {
+  const p = ['314', '884', '8522'];
+  const e = ['cannon', 'central-tennis', 'com'];
+  const phoneText = '(' + p[0] + ') ' + p[1] + '-' + p[2];
+  const phoneLink = 'tel:+1' + p.join('');
+  const email = e[0] + '@' + e[1] + '.' + e[2];
+  const emailLink = 'mailto:' + email;
+
+  document.querySelectorAll('[data-contact="phone"]').forEach(el => {
+    el.href = phoneLink;
+    const span = el.querySelector('span');
+    if (span) {
+      span.textContent = phoneText;
+    } else {
+      el.textContent = phoneText;
+    }
+  });
+
+  document.querySelectorAll('[data-contact="email"]').forEach(el => {
+    el.href = emailLink;
+    el.textContent = email;
+  });
+})();
+
 // DOM Elements
 const header = document.getElementById('header');
 const hamburger = document.getElementById('hamburger');
