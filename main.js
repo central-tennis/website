@@ -85,37 +85,77 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// Form validation and submission
+// Form validation and AJAX submission (no redirect)
 if (contactForm) {
-  contactForm.addEventListener('submit', function(e) {
+  contactForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
     const formData = new FormData(this);
     const name = formData.get('name');
     const email = formData.get('email');
     const phone = formData.get('phone');
-    
+    const submitBtn = this.querySelector('.form-submit');
+
     // Basic validation
     if (!name || !email || !phone) {
-      e.preventDefault();
-      alert('Please fill in all required fields.');
+      showFormMessage('Please fill in all required fields.', 'error');
       return;
     }
-    
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      e.preventDefault();
-      alert('Please enter a valid email address.');
+      showFormMessage('Please enter a valid email address.', 'error');
       return;
     }
-    
+
     // Phone validation (basic)
     const phoneRegex = /^[\d\s\-\(\)\+]+$/;
     if (!phoneRegex.test(phone)) {
-      e.preventDefault();
-      alert('Please enter a valid phone number.');
+      showFormMessage('Please enter a valid phone number.', 'error');
       return;
     }
+
+    // Show loading state
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        showFormMessage('Thanks! We\'ll be in touch soon.', 'success');
+        this.reset();
+      } else {
+        showFormMessage('Something went wrong. Please try again.', 'error');
+      }
+    } catch (error) {
+      showFormMessage('Something went wrong. Please try again.', 'error');
+    }
+
+    submitBtn.textContent = 'Request a Quote';
+    submitBtn.disabled = false;
   });
+}
+
+// Show form message helper
+function showFormMessage(message, type) {
+  let msgEl = document.getElementById('form-message');
+  if (!msgEl) {
+    msgEl = document.createElement('div');
+    msgEl.id = 'form-message';
+    contactForm.appendChild(msgEl);
+  }
+  msgEl.textContent = message;
+  msgEl.className = 'form-message form-message--' + type;
+  msgEl.style.display = 'block';
+
+  // Auto-hide after 5 seconds
+  setTimeout(() => { msgEl.style.display = 'none'; }, 5000);
 }
 
 // Intersection Observer for scroll animations
@@ -167,15 +207,6 @@ document.addEventListener('click', (e) => {
     toggleMobileMenu();
   }
 });
-
-// Add loading state to form submit button
-if (contactForm) {
-  contactForm.addEventListener('submit', function() {
-    const submitBtn = this.querySelector('.form-submit');
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
-  });
-}
 
 // Console welcome message
 console.log('%c🎾 Central Tennis', 'font-size: 24px; font-weight: bold; color: #1E3A8A;');
